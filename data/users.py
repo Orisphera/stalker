@@ -16,7 +16,7 @@ class User(SqlAlchemyBase, UserMixin):
     login = sqlalchemy.Column(sqlalchemy.String, index=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
-    score = sqlalchemy.Column(sqlalchemy.Integer)
+    score = sqlalchemy.Column(sqlalchemy.Integer, default=lambda: 0)
     anomalies = orm.relation("Anomaly", back_populates='author')
 
     def set_password(self, password):

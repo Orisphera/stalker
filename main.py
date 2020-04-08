@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, EqualTo
 
 from data import db_session
 from data.anomalies import Anomaly
+from data.found import Found
 from data.users import User
 
 app = Flask(__name__)
@@ -131,10 +132,28 @@ def to_anomaly_page_js():
         return f.read()
 
 
+class AnomalyAnswerForm(FlaskForm):
+    ans = StringField("Ответ", validators=[DataRequired()])
+    submit = SubmitField("Отправить")
+
+
 @app.route('/anomaly/<int:anomaly_id>', methods=["GET", "POST"])
 def anomaly_page(anomaly_id):
     session = db_session.create_session()
     anomaly = session.query(Anomaly).filter(Anomaly.id == anomaly_id).one()
+    form = AnomalyAnswerForm()
+    if form.validate_on_submit():
+        if form.ans.data == anomaly.ans:
+            message = "Правильно!"
+            if current_user.is_authenticated and \
+               not session.query(Found).filter(Found.user_id == current_user.id &
+                                               Found.anomaly_id == anomaly_id):
+                new_found = Found()
+                new_found.user_id = current_user.id
+                new_found.anomaly_id = anomaly_id
+                current_user.score += 5
+        else:
+            message = "Неправильный ответ"
     return render_template('anomaly.html')
 
 
