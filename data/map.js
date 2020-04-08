@@ -4,7 +4,6 @@ let span = 0.01;
 
 
 function updateMap() {
-
     const map = document.getElementById("map")
     map.setAttribute("src", "http://static-maps.yandex.ru/1.x/?ll="+center_longitude+","+center_latitude+
         "&spn="+span+","+span+"&l=map&pt=<marks>");

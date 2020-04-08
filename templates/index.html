@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block scripts %}
     <script type="text/javascript" src="/map.js"></script>
+    <script type="text/javascript" src="/to_anomaly_page.js"></script>
 {% endblock %}
 {% block content %}
     <table>
@@ -51,7 +52,7 @@
                     <input type="number" id="anomaly_id">
                 </p>
                 <p>
-                    <button onclick=""
+                    <button onclick="toAnomalyPage()"> Перейти к описанию аномалии </button>
                 </p>
             </td>
         </tr>

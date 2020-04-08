@@ -89,6 +89,12 @@ def map_js():
         return f.read().replace('<marks>', '~'.join(get_marks()))
 
 
+@app.route('/to_anomaly_page.js')
+def to_anomaly_page_js():
+    with open('data/to_anomaly_page.js') as f:
+        return f.read()
+
+
 @app.route('/')
 def index():
     return render_template('index.html', title='Домашняя страница')
