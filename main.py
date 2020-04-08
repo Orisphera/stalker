@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
 from wtforms import PasswordField, BooleanField, SubmitField, StringField
@@ -39,10 +39,10 @@ def register():
             return render_template('register.html', title="Регистрация",
                                    message="Такой пользователь уже есть",
                                    form=form)
-        user = User()
-        user.name = form.name.data
-        user.login = form.login.data
-        user.hashed_password = user.generate_password(form.password.data)
+        user = User(name=form.name.data,
+                    login=form.login.data)
+        user.set_password(form.password.data)
+        session.add(user)
         session.commit()
         return redirect('/')
     return render_template('register.html', title="Регистрация", form=form)
@@ -75,6 +75,34 @@ def login():
 def logout():
     logout_user()
     return redirect("/")
+
+
+@app.route('/empty.js')
+def empty_js():
+    return "function onload() {}"
+
+
+class AnomalyForm(FlaskForm):
+    name = StringField("Название аномалии")
+    desc = StringField("Описание артефакта")
+    latt = StringField("Широта в градусах")
+    long = StringField("Долгота в градусах")
+
+
+@app.route("/new_anomaly", methods=["GET", "POST"])
+def new_anomaly():
+    form = AnomalyForm()
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        anomaly = Anomaly()
+        anomaly.name = form.name.data
+        anomaly.desc = form.desc.data
+        anomaly.pos = f'{form.long.data},{form.latt.data}'
+        current_user.anomalies.append(anomaly)
+        session.merge(current_user)
+        session.commit()
+        return redirect('/')
+    return render_template('new_anomaly.html', title='Создание аномалии', form=form)
 
 
 def get_marks():

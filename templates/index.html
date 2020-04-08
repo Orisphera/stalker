@@ -54,6 +54,11 @@
                 <p>
                     <button onclick="toAnomalyPage()"> Перейти к описанию аномалии </button>
                 </p>
+                {% if current_user.is_authenticated %}
+                    <p>
+                        <a href="/new_anomaly"> Создать аномалию </a>
+                    </p>
+                {% endif %}
             </td>
         </tr>
     </table>
