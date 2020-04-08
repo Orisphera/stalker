@@ -26,7 +26,6 @@ class RegisterForm(FlaskForm):
     login = StringField('Логин', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     password2 = PasswordField('Подтвердите пароль', validators=[EqualTo('password')])
-    remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
 
 
@@ -82,11 +81,12 @@ def empty_js():
     return "function onload() {}"
 
 
-class AnomalyForm(FlaskForm):
-    name = StringField("Название аномалии", validators=[DataRequired()])
-    desc = StringField("Описание артефакта", validators=[DataRequired()])
+class NewAnomalyForm(FlaskForm):
     latt = StringField("Широта в градусах", validators=[DataRequired()])
     long = StringField("Долгота в градусах", validators=[DataRequired()])
+    name = StringField("Название аномалии", validators=[DataRequired()])
+    desc = StringField("Описание артефакта", validators=[DataRequired()])
+    ans = StringField("Ответ", validators=[DataRequired()])
     submit = SubmitField('Создать')
 
 
@@ -98,13 +98,14 @@ def new_anomaly_js():
 
 @app.route("/new_anomaly", methods=["GET", "POST"])
 def new_anomaly():
-    form = AnomalyForm()
+    form = NewAnomalyForm()
     if form.validate_on_submit():
         session = db_session.create_session()
         anomaly = Anomaly()
+        anomaly.pos = f'{form.long.data},{form.latt.data}'
         anomaly.name = form.name.data
         anomaly.desc = form.desc.data
-        anomaly.pos = f'{form.long.data},{form.latt.data}'
+        anomaly.ans = form.ans.data
         current_user.anomalies.append(anomaly)
         session.merge(current_user)
         session.commit()
@@ -128,6 +129,13 @@ def map_js():
 def to_anomaly_page_js():
     with open('data/to_anomaly_page.js') as f:
         return f.read()
+
+
+@app.route('/anomaly/<int:anomaly_id>', methods=["GET", "POST"])
+def anomaly_page(anomaly_id):
+    session = db_session.create_session()
+    anomaly = session.query(Anomaly).filter(Anomaly.id == anomaly_id).one()
+    return render_template('anomaly.html')
 
 
 @app.route('/')

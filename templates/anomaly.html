@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+    <table>
+        <tr>
+            <td>
+                <img src="http://static-maps.yandex.ru/1.x/?ll={{anomaly.pos}}&spn=0.01,0.01&l=map&pt={{anomaly.pos}}">
+            </td>
+            <td>
+                <h1>{{ anomaly.name }}</h1>
+                {{ anomaly.desc }}
+
+            </td>
+        </tr>
+    </table>
+{% endblock %}

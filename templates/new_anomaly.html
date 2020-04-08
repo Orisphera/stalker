@@ -8,6 +8,24 @@
         {{ form.hidden_tag() }}
         {{ form.csrf_token }}
         <p>
+            {{ form.latt.label }}<br>
+            {{ form.latt(class="form-control") }}<br>
+            {% for error in form.latt.errors %}
+                <p content="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.long.label }}<br>
+            {{ form.long(class="form-control") }}<br>
+            {% for error in form.long.errors %}
+                <p content="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </p>
+        <p>
             {{ form.name.label }}<br>
             {{ form.name(class="form-control") }}<br>
             {% for error in form.name.errors %}
@@ -26,18 +44,9 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.latt.label }}<br>
-            {{ form.latt(class="form-control") }}<br>
-            {% for error in form.latt.errors %}
-                <p content="alert alert-danger" role="alert">
-                    {{ error }}
-                </p>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.long.label }}<br>
-            {{ form.long(class="form-control") }}<br>
-            {% for error in form.long.errors %}
+            {{ form.ans.label }}<br>
+            {{ form.ans(class="form-control") }}<br>
+            {% for error in form.ans.errors %}
                 <p content="alert alert-danger" role="alert">
                     {{ error }}
                 </p>
