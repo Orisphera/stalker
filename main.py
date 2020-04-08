@@ -27,7 +27,7 @@ class RegisterForm(FlaskForm):
     login = StringField('Логин', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     password2 = PasswordField('Подтвердите пароль', validators=[EqualTo('password')])
-    submit = SubmitField('Войти')
+    submit = SubmitField('Зарегистрироваться')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -83,8 +83,12 @@ def empty_js():
 
 
 class NewAnomalyForm(FlaskForm):
-    latt = StringField("Широта в градусах", validators=[DataRequired()])
-    long = StringField("Долгота в градусах", validators=[DataRequired()])
+    latt_deg = StringField("", validators=[DataRequired()])
+    latt_min = StringField("", validators=[DataRequired()])
+    latt_sec = StringField("", validators=[DataRequired()])
+    long_deg = StringField("", validators=[DataRequired()])
+    long_min = StringField("", validators=[DataRequired()])
+    long_sec = StringField("", validators=[DataRequired()])
     name = StringField("Название аномалии", validators=[DataRequired()])
     desc = StringField("Описание артефакта", validators=[DataRequired()])
     ans = StringField("Ответ", validators=[DataRequired()])
@@ -103,7 +107,8 @@ def new_anomaly():
     if form.validate_on_submit():
         session = db_session.create_session()
         anomaly = Anomaly()
-        anomaly.pos = f'{form.long.data},{form.latt.data}'
+        anomaly.pos = f'{form.long_deg.data + (form.long_min.data + form.long_sec.data / 60) / 60},' \
+                      f'{form.latt_deg.data + (form.latt_min.data + form.latt_sec.data / 60) / 60}'
         anomaly.name = form.name.data
         anomaly.desc = form.desc.data
         anomaly.ans = form.ans.data

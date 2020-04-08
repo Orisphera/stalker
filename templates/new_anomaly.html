@@ -1,57 +1,130 @@
 {% extends "base.html" %}
 {% block scripts %}
+    <script type="text/javascript" src="/anomaly_on_map.js"></script>
     <script type="text/javascript" src="/new_anomaly.js"></script>
 {% endblock %}
 {% block content %}
     <h1>Добавление аномалии</h1>
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        {{ form.csrf_token }}
-        <p>
-            {{ form.latt.label }}<br>
-            {{ form.latt(class="form-control") }}<br>
-            {% for error in form.latt.errors %}
-                <p content="alert alert-danger" role="alert">
-                    {{ error }}
-                </p>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.long.label }}<br>
-            {{ form.long(class="form-control") }}<br>
-            {% for error in form.long.errors %}
-                <p content="alert alert-danger" role="alert">
-                    {{ error }}
-                </p>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.name.label }}<br>
-            {{ form.name(class="form-control") }}<br>
-            {% for error in form.name.errors %}
-                <p class="alert alert-danger" role="alert">
-                    {{ error }}
-                </p>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.desc.label }}<br>
-            {{ form.desc(class="form-control") }}<br>
-            {% for error in form.desc.errors %}
-                <p content="alert alert-danger" role="alert">
-                    {{ error }}
-                </p>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.ans.label }}<br>
-            {{ form.ans(class="form-control") }}<br>
-            {% for error in form.ans.errors %}
-                <p content="alert alert-danger" role="alert">
-                    {{ error }}
-                </p>
-            {% endfor %}
-        </p>
-        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    </form>
+    <table>
+        <tr>
+            <td>
+                <img id="map">
+            </td>
+            <td>
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    {{ form.csrf_token }}
+                    <table>
+                        <tr>
+                            <td>
+                                Широта:
+                            </td>
+                            <td>
+                                {{ form.latt_deg(class="form-control") }}
+                                {% for error in form.latt_deg.errors %}
+                                    <p content="alert alert-danger" role="alert">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                °
+                            </td>
+                            <td>
+                                {{ form.latt_min(class="form-control") }}
+                                {% for error in form.latt_min.errors %}
+                                    <p content="alert alert-danger" role="alert">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                '
+                            </td>
+                            <td>
+                                {{ form.latt_sec(class="form-control") }}
+                                {% for error in form.latt_sec.errors %}
+                                    <p content="alert alert-danger" role="alert">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                "
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Долгота:
+                            </td>
+                            <td>
+                                {{ form.long_deg(class="form-control") }}
+                                {% for error in form.long_deg.errors %}
+                                    <p content="alert alert-danger" role="alert">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                °
+                            </td>
+                            <td>
+                                {{ form.long_min(class="form-control") }}
+                                {% for error in form.long_min.errors %}
+                                    <p content="alert alert-danger" role="alert">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                '
+                            </td>
+                            <td>
+                                {{ form.long_sec(class="form-control") }}
+                                {% for error in form.long_sec.errors %}
+                                    <p content="alert alert-danger" role="alert">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                "
+                            </td>
+                        </tr>
+                    </table>
+                    <p>
+                        <button onclick="showOnMap1()"> Показать на карте </button>
+                    </p>
+                    <p>
+                        {{ form.name.label }}<br>
+                        {{ form.name(class="form-control") }}<br>
+                        {% for error in form.name.errors %}
+                            <p class="alert alert-danger" role="alert">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </p>
+                    <p>
+                        {{ form.desc.label }}<br>
+                        {{ form.desc(class="form-control") }}<br>
+                        {% for error in form.desc.errors %}
+                            <p content="alert alert-danger" role="alert">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </p>
+                    <p>
+                        {{ form.ans.label }}<br>
+                        {{ form.ans(class="form-control") }}<br>
+                        {% for error in form.ans.errors %}
+                            <p content="alert alert-danger" role="alert">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </p>
+                    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+                </form>
+            </td>
+        </tr>
+    </table>
 {% endblock %}
