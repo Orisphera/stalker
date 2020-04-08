@@ -83,10 +83,17 @@ def empty_js():
 
 
 class AnomalyForm(FlaskForm):
-    name = StringField("Название аномалии")
-    desc = StringField("Описание артефакта")
-    latt = StringField("Широта в градусах")
-    long = StringField("Долгота в градусах")
+    name = StringField("Название аномалии", validators=[DataRequired()])
+    desc = StringField("Описание артефакта", validators=[DataRequired()])
+    latt = StringField("Широта в градусах", validators=[DataRequired()])
+    long = StringField("Долгота в градусах", validators=[DataRequired()])
+    submit = SubmitField('Создать')
+
+
+@app.route("/new_anomaly.js")
+def new_anomaly_js():
+    with open("data/new_anomaly.js") as f:
+        return f.read()
 
 
 @app.route("/new_anomaly", methods=["GET", "POST"])
@@ -102,7 +109,7 @@ def new_anomaly():
         session.merge(current_user)
         session.commit()
         return redirect('/')
-    return render_template('new_anomaly.html', title='Создание аномалии', form=form)
+    return render_template('new_anomaly.html', form=form)
 
 
 def get_marks():
