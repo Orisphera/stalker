@@ -1,0 +1,21 @@
+import datetime
+
+import sqlalchemy
+from sqlalchemy import orm
+
+from .db_session import SqlAlchemyBase
+
+
+class Comment(SqlAlchemyBase):
+    __tablename__ = 'comments'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
+    text = sqlalchemy.Column(sqlalchemy.Text)
+    date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+
+    anomaly_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('anomalies.id'),
+                                   index=True)
+    anomaly = orm.relation('anomalies')
+
+    author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.id'))
+    author = orm.relation('users')

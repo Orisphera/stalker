@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block scripts %}
+    <script type="text/javascript" src="/map.js"></script>
+{% endblock %}
+{% block content %}
+    <table>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <div align="center">
+                                <button onclick="moveUp()"> ^ </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="right">
+                                <button onclick="moveLeft()"> < </button>
+                            </div>
+                        </td>
+                        <td>
+                            <img id="map">
+                        </td>
+                        <td>
+                            <button onclick="moveRight()"> > </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button onclick="zoomIn()"> Zoom in </button>
+                        </td>
+                        <td>
+                            <div align="center">
+                                <button onclick="moveDown()"> v </button>
+                            </div>
+                        </td>
+                        <td>
+                            <button onclick="zoomOut()"> Zoom out </button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <p>
+                    Введите ID аномалии, чтобы перейти на её страницу:
+                </p>
+                <p>
+                    <input type="number" id="anomaly_id">
+                </p>
+                <p>
+                    <button onclick=""
+                </p>
+            </td>
+        </tr>
+    </table>
+{% endblock %}
