@@ -11,6 +11,9 @@
                 <img id="map">
             </td>
             <td>
+                <p>
+                    <button onclick="showOnMap1()"> Показать на карте </button>
+                </p>
                 <form action="" method="post">
                     {{ form.hidden_tag() }}
                     {{ form.csrf_token }}
@@ -92,9 +95,6 @@
                             </td>
                         </tr>
                     </table>
-                    <p>
-                        <button onclick="showOnMap1()"> Показать на карте </button>
-                    </p>
                     <p>
                         {{ form.name.label }}<br>
                         {{ form.name(class="form-control") }}<br>

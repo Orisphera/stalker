@@ -107,8 +107,11 @@ def new_anomaly():
     if form.validate_on_submit():
         session = db_session.create_session()
         anomaly = Anomaly()
-        anomaly.pos = f'{form.long_deg.data + (form.long_min.data + form.long_sec.data / 60) / 60},' \
-                      f'{form.latt_deg.data + (form.latt_min.data + form.latt_sec.data / 60) / 60}'
+        long = float(form.long_deg.data) + (
+                    float(form.long_min.data) + float(form.long_sec.data) / 60) / 60
+        latt = float(form.latt_deg.data) + (
+                    float(form.latt_min.data) + float(form.latt_sec.data) / 60) / 60
+        anomaly.pos = f'{long},{latt}'
         anomaly.name = form.name.data
         anomaly.desc = form.desc.data
         anomaly.ans = form.ans.data
@@ -129,6 +132,12 @@ def get_marks():
 def map_js():
     with open('data/map.js') as f:
         return f.read().replace('<marks>', '~'.join(get_marks()))
+
+
+@app.route('/anomaly_on_map.js')
+def anomaly_on_map_js():
+    with open('data/anomaly_on_map.js') as f:
+        return f.read()
 
 
 @app.route('/to_anomaly_page.js')
@@ -159,7 +168,8 @@ def anomaly_page(anomaly_id):
                 current_user.score += 5
         else:
             message = "Неправильный ответ"
-    return render_template('anomaly.html')
+        return render_template('anomaly.html', anomaly=anomaly, form=form, message=message)
+    return render_template('anomaly.html', anomaly=anomaly, form=form)
 
 
 @app.route('/')
