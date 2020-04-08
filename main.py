@@ -137,7 +137,7 @@ class AnomalyAnswerForm(FlaskForm):
     submit = SubmitField("Отправить")
 
 
-@app.route('/anomaly/<int:anomaly_id>', methods=["GET", "POST"])
+@app.route('/anomalies/<int:anomaly_id>', methods=["GET", "POST"])
 def anomaly_page(anomaly_id):
     session = db_session.create_session()
     anomaly = session.query(Anomaly).filter(Anomaly.id == anomaly_id).one()
