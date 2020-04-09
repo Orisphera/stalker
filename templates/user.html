@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+    <p>
+        {{ user.name }} ({{ user.login }})
+    </p>
+    <p>
+        Зарегистрирован {{ user.created_date }}
+    </p>
+    <p>
+        Очки: {{ user.score }}
+    </p>
+{% endblock %}

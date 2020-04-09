@@ -140,9 +140,15 @@ def anomaly_on_map_js():
         return f.read()
 
 
-@app.route('/to_anomaly_page.js')
+@app.route('/to_page.js')
 def to_anomaly_page_js():
-    with open('data/to_anomaly_page.js') as f:
+    with open('data/to_page.js') as f:
+        return f.read()
+
+
+@app.route("/anomaly.js")
+def anomaly_js():
+    with open("data/anomaly.js") as f:
         return f.read()
 
 
@@ -170,6 +176,13 @@ def anomaly_page(anomaly_id):
             message = "Неправильный ответ"
         return render_template('anomaly.html', anomaly=anomaly, form=form, message=message)
     return render_template('anomaly.html', anomaly=anomaly, form=form)
+
+
+@app.route('/users/<user_login>')
+def user_page(user_login):
+    session = db_session.create_session()
+    return render_template('user.html', user=session.query(User)
+                           .filter(User.login == user_login).one())
 
 
 @app.route('/')

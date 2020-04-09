@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block scripts %}
     <script type="text/javascript" src="/map.js"></script>
-    <script type="text/javascript" src="/to_anomaly_page.js"></script>
+    <script type="text/javascript" src="/to_page.js"></script>
 {% endblock %}
 {% block content %}
     <table>
@@ -62,4 +62,7 @@
             </td>
         </tr>
     </table>
+    Введите логин пользователя, чтобы перейти на его страницу:
+    <input type="text" id="user_id">
+    <button onclick="toUserPage()">Перейти на страницу пользователя</button>
 {% endblock %}
