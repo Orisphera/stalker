@@ -160,8 +160,8 @@ def anomaly_page(anomaly_id):
         if form.ans.data == anomaly.ans:
             message = "Правильно!"
             if current_user.is_authenticated and \
-               not session.query(Found).filter(Found.user_id == current_user.id &
-                                               Found.anomaly_id == anomaly_id):
+               not session.query(Found).filter((Found.user_id == current_user.id) &
+                                                (Found.anomaly_id == anomaly_id)):
                 new_found = Found()
                 new_found.user_id = current_user.id
                 new_found.anomaly_id = anomaly_id
