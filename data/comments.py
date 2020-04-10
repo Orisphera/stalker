@@ -13,9 +13,9 @@ class Comment(SqlAlchemyBase):
     text = sqlalchemy.Column(sqlalchemy.Text)
     date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
-    anomaly_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('anomalies.id'),
-                                   index=True)
-    anomaly = orm.relation('anomalies')
+    riddle_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('anomalies.id'),
+                                  index=True)
+    riddle = orm.relation('riddles')
 
     author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.id'))
     author = orm.relation('users')

@@ -1,5 +1,5 @@
-function toAnomalyPage() {
-    window.location.href = "/anomalies/" + document.getElementById("anomaly_id").value;
+function toRiddlePage() {
+    window.location.href = "/riddles/" + document.getElementById("riddle_id").value;
 }
 
 function toUserPage() {

@@ -17,8 +17,10 @@ class User(SqlAlchemyBase, UserMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     score = sqlalchemy.Column(sqlalchemy.Integer, default=lambda: 0)
-    anomalies = orm.relation("Anomaly", back_populates='author')
+
+    riddles = orm.relation("Riddle", back_populates='author')
     founds = orm.relation("Found", back_populates="user")
+    comments = orm.relation("Comment", back_populates="author")
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

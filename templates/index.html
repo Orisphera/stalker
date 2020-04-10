@@ -45,24 +45,32 @@
                 </table>
             </td>
             <td>
+                <a href="/help"> Как играть </a>
+                <br><br><br><br>
                 <p>
-                    Введите ID аномалии, чтобы перейти на её страницу:
+                    Введите ID загадки, чтобы перейти на её страницу:
                 </p>
                 <p>
-                    <input type="number" id="anomaly_id">
+                    <input type="number" id="riddle_id">
                 </p>
                 <p>
-                    <button onclick="toAnomalyPage()"> Перейти к описанию аномалии </button>
+                    <button onclick="toRiddlePage()"> Перейти к описанию загадки </button>
                 </p>
                 {% if current_user.is_authenticated %}
                     <p>
-                        <a href="/new_anomaly"> Создать аномалию </a>
+                        <a href="/new_anomaly"> Создать загадку </a>
                     </p>
                 {% endif %}
             </td>
         </tr>
     </table>
-    Введите логин пользователя, чтобы перейти на его страницу:
-    <input type="text" id="user_id">
-    <button onclick="toUserPage()">Перейти на страницу пользователя</button>
+    <br>
+    <p>
+        Введите логин игрока, чтобы перейти на его страницу:
+        <input type="text" id="user_id">
+        <button onclick="toUserPage()">Перейти на страницу игрока</button>
+    </p>
+    <p>
+        <a href="/score-table">Результаты</a>
+    </p>
 {% endblock %}

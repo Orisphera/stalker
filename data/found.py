@@ -14,7 +14,7 @@ class Found(SqlAlchemyBase):
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
     user = orm.relation('User')
 
-    anomaly_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('anomalies.id'))
-    anomaly = orm.relation('Anomaly')
+    riddle_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('anomalies.id'))
+    riddle = orm.relation('Riddle')
 
     date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)

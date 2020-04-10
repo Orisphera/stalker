@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block scripts %}
-    <script type="text/javascript" src="/anomaly_on_map.js"></script>
-    <script type="text/javascript" src="/anomaly.js"></script>
+    <script type="text/javascript" src="/riddle_on_map.js"></script>
+    <script type="text/javascript" src="/riddle.js"></script>
 {% endblock %}
 {% block content %}
     <table>
@@ -10,8 +10,8 @@
                 <img id="map" coords="{{anomaly.pos}}">
             </td>
             <td>
-                <h1>{{ anomaly.name }}</h1>
-                {{ anomaly.desc }}
+                <h1>{{ riddle.name }}</h1>
+                {{ riddle.desc }}
                 <form action="" method="post">
                     {{ form.hidden_tag() }}
                     <p>
@@ -26,13 +26,15 @@
                     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
                     <div>{{ message }}</div>
                 </form>
+                Автор загадки: {{ riddle.author.name }} ({{ riddle.author.login }})
+                <a href="mailto:asvasil22@gmail.com">Сообщить о неточности</a>
             </td>
         </tr>
     </table>
-    Следующие пользователи нашли артефакт:
+    Следующие игроки разгадали загадку:
     <ul>
-        {% for found in anomaly.founds %}
-            <li>{{ found.user.name }}</li>
+        {% for found in riddle.founds %}
+            <li>{{ found.user.name }} ({{ found.user.login }})</li>
         {% endfor %}
     </ul>
 {% endblock %}

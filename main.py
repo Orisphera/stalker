@@ -6,7 +6,7 @@ from wtforms import PasswordField, BooleanField, SubmitField, StringField
 from wtforms.validators import DataRequired, EqualTo
 
 from data import db_session
-from data.anomalies import Anomaly
+from data.riddles import Riddle
 from data.found import Found
 from data.users import User
 
@@ -23,10 +23,10 @@ def load_user(user_id):
 
 
 class RegisterForm(FlaskForm):
-    name = StringField('Имя', validators=[DataRequired()])
-    login = StringField('Логин', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
-    password2 = PasswordField('Подтвердите пароль', validators=[EqualTo('password')])
+    name = StringField('Имя:', validators=[DataRequired()])
+    login = StringField('Логин:', validators=[DataRequired()])
+    password = PasswordField('Пароль:', validators=[DataRequired()])
+    password2 = PasswordField('Подтвердите пароль:', validators=[EqualTo('password')])
     submit = SubmitField('Зарегистрироваться')
 
 
@@ -49,8 +49,8 @@ def register():
 
 
 class LoginForm(FlaskForm):
-    login = StringField('Логин', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
+    login = StringField('Логин:', validators=[DataRequired()])
+    password = PasswordField('Пароль:', validators=[DataRequired()])
     remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
 
@@ -89,9 +89,9 @@ class NewAnomalyForm(FlaskForm):
     long_deg = StringField("", validators=[DataRequired()])
     long_min = StringField("", validators=[DataRequired()])
     long_sec = StringField("", validators=[DataRequired()])
-    name = StringField("Название аномалии", validators=[DataRequired()])
-    desc = StringField("Описание артефакта", validators=[DataRequired()])
-    ans = StringField("Ответ", validators=[DataRequired()])
+    name = StringField("Название аномалии:", validators=[DataRequired()])
+    desc = StringField("Описание артефакта:", validators=[DataRequired()])
+    ans = StringField("Ответ:", validators=[DataRequired()])
     submit = SubmitField('Создать')
 
 
@@ -106,16 +106,16 @@ def new_anomaly():
     form = NewAnomalyForm()
     if form.validate_on_submit():
         session = db_session.create_session()
-        anomaly = Anomaly()
+        riddle = Riddle()
         long = float(form.long_deg.data) + (
                     float(form.long_min.data) + float(form.long_sec.data) / 60) / 60
         latt = float(form.latt_deg.data) + (
                     float(form.latt_min.data) + float(form.latt_sec.data) / 60) / 60
-        anomaly.pos = f'{long},{latt}'
-        anomaly.name = form.name.data
-        anomaly.desc = form.desc.data
-        anomaly.ans = form.ans.data
-        current_user.anomalies.append(anomaly)
+        riddle.pos = f'{long},{latt}'
+        riddle.name = form.name.data
+        riddle.desc = form.desc.data
+        riddle.ans = form.ans.data
+        current_user.anomalies.append(riddle)
         session.merge(current_user)
         session.commit()
         return redirect('/')
@@ -124,8 +124,10 @@ def new_anomaly():
 
 def get_marks():
     session = db_session.create_session()
-    for anomaly in session.query(Anomaly).all():
-        yield f"{anomaly.pos},pmw"f"tm{anomaly.id}"
+    for riddle in session.query(Riddle).all():
+        found = current_user.is_authenticated and session.query(Found)\
+            .filter((Found.user_id == current_user.id) & (Found.anomaly_id == riddle.id))
+        yield f"{riddle.pos},pm{'gr' if found else 'wt'}m{riddle.id}"
 
 
 @app.route('/map.js')
@@ -146,24 +148,24 @@ def to_anomaly_page_js():
         return f.read()
 
 
-@app.route("/anomaly.js")
+@app.route("/riddle.js")
 def anomaly_js():
-    with open("data/anomaly.js") as f:
+    with open("data/riddle.js") as f:
         return f.read()
 
 
 class AnomalyAnswerForm(FlaskForm):
-    ans = StringField("Ответ", validators=[DataRequired()])
+    ans = StringField("Ответ:", validators=[DataRequired()])
     submit = SubmitField("Отправить")
 
 
 @app.route('/anomalies/<int:anomaly_id>', methods=["GET", "POST"])
 def anomaly_page(anomaly_id):
     session = db_session.create_session()
-    anomaly = session.query(Anomaly).filter(Anomaly.id == anomaly_id).one()
+    riddle = session.query(Riddle).filter(Riddle.id == anomaly_id).one()
     form = AnomalyAnswerForm()
     if form.validate_on_submit():
-        if form.ans.data == anomaly.ans:
+        if form.ans.data == riddle.ans:
             message = "Правильно!"
             if current_user.is_authenticated and \
                not session.query(Found).filter((Found.user_id == current_user.id) &
@@ -178,8 +180,8 @@ def anomaly_page(anomaly_id):
                 session.commit()
         else:
             message = "Неправильный ответ"
-        return render_template('anomaly.html', anomaly=anomaly, form=form, message=message)
-    return render_template('anomaly.html', anomaly=anomaly, form=form)
+        return render_template('riddle.html', riddle=riddle, form=form, message=message)
+    return render_template('riddle.html', riddle=riddle, form=form)
 
 
 @app.route('/users/<user_login>')
@@ -187,6 +189,18 @@ def user_page(user_login):
     session = db_session.create_session()
     user = session.query(User).filter(User.login == user_login).one()
     return render_template('user.html', user=user)
+
+
+@app.route('/score-table')
+def score_table():
+    session = db_session.create_session()
+    users = session.query(User).order_by(User.score.desc())
+    return render_template('score_table.html', users=users, title="Положение")
+
+
+@app.route('/help')
+def help1():
+    return render_template('help.html', title="Как играть")
 
 
 @app.route('/')

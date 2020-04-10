@@ -10,10 +10,10 @@
         Очки: {{ user.score }}
     </p>
     <p>
-        Нашёл аномалии:
+        Разгадал загадки:
         <ul>
             {% for found in user.founds %}
-                <li>{{ found.anomaly.name }}</li>
+                <li>{{ found.riddle.name }}</li>
             {% endfor %}
         </ul>
     </p>
