@@ -29,4 +29,10 @@
             </td>
         </tr>
     </table>
+    Следующие пользователи нашли артефакт:
+    <ul>
+        {% for found in anomaly.founds %}
+            <li>{{ found.user.name }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

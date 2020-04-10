@@ -18,3 +18,5 @@ class Anomaly(SqlAlchemyBase):
 
     author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
     author = orm.relation('User')
+
+    founds = orm.relation('Found', back_populates='anomaly')

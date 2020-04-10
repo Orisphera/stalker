@@ -9,4 +9,12 @@
     <p>
         Очки: {{ user.score }}
     </p>
+    <p>
+        Нашёл аномалии:
+        <ul>
+            {% for found in user.founds %}
+                <li>{{ found.anomaly.name }}</li>
+            {% endfor %}
+        </ul>
+    </p>
 {% endblock %}

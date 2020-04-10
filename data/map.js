@@ -54,6 +54,3 @@ function zoomOut() {
     span *= 10;
     updateMap();
 }
-
-
-

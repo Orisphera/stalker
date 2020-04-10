@@ -167,11 +167,15 @@ def anomaly_page(anomaly_id):
             message = "Правильно!"
             if current_user.is_authenticated and \
                not session.query(Found).filter((Found.user_id == current_user.id) &
-                                                (Found.anomaly_id == anomaly_id)):
+                                               (Found.anomaly_id == anomaly_id)).all():
                 new_found = Found()
                 new_found.user_id = current_user.id
                 new_found.anomaly_id = anomaly_id
+                current_user.founds.append(new_found)
                 current_user.score += 5
+                print(current_user.score)
+                session.merge(current_user)
+                session.commit()
         else:
             message = "Неправильный ответ"
         return render_template('anomaly.html', anomaly=anomaly, form=form, message=message)
@@ -181,8 +185,8 @@ def anomaly_page(anomaly_id):
 @app.route('/users/<user_login>')
 def user_page(user_login):
     session = db_session.create_session()
-    return render_template('user.html', user=session.query(User)
-                           .filter(User.login == user_login).one())
+    user = session.query(User).filter(User.login == user_login).one()
+    return render_template('user.html', user=user)
 
 
 @app.route('/')
