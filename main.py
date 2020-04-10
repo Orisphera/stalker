@@ -82,7 +82,7 @@ def empty_js():
     return "function onload() {}"
 
 
-class NewAnomalyForm(FlaskForm):
+class NewRiddleForm(FlaskForm):
     latt_deg = StringField("", validators=[DataRequired()])
     latt_min = StringField("", validators=[DataRequired()])
     latt_sec = StringField("", validators=[DataRequired()])
@@ -95,15 +95,15 @@ class NewAnomalyForm(FlaskForm):
     submit = SubmitField('Создать')
 
 
-@app.route("/new_anomaly.js")
-def new_anomaly_js():
-    with open("data/new_anomaly.js") as f:
+@app.route("/new_riddle.js")
+def new_riddle_js():
+    with open("data/new_riddle.js") as f:
         return f.read()
 
 
-@app.route("/new_anomaly", methods=["GET", "POST"])
-def new_anomaly():
-    form = NewAnomalyForm()
+@app.route("/new_riddle", methods=["GET", "POST"])
+def new_riddle():
+    form = NewRiddleForm()
     if form.validate_on_submit():
         session = db_session.create_session()
         riddle = Riddle()
@@ -115,18 +115,18 @@ def new_anomaly():
         riddle.name = form.name.data
         riddle.desc = form.desc.data
         riddle.ans = form.ans.data
-        current_user.anomalies.append(riddle)
+        current_user.riddlies.append(riddle)
         session.merge(current_user)
         session.commit()
         return redirect('/')
-    return render_template('new_anomaly.html', form=form)
+    return render_template('new_riddle.html', form=form)
 
 
 def get_marks():
     session = db_session.create_session()
     for riddle in session.query(Riddle).all():
         found = current_user.is_authenticated and session.query(Found)\
-            .filter((Found.user_id == current_user.id) & (Found.anomaly_id == riddle.id))
+            .filter((Found.user_id == current_user.id) & (Found.riddle_id == riddle.id))
         yield f"{riddle.pos},pm{'gr' if found else 'wt'}m{riddle.id}"
 
 
@@ -136,46 +136,45 @@ def map_js():
         return f.read().replace('<marks>', '~'.join(get_marks()))
 
 
-@app.route('/anomaly_on_map.js')
-def anomaly_on_map_js():
-    with open('data/anomaly_on_map.js') as f:
+@app.route('/riddle_on_map.js')
+def riddle_on_map_js():
+    with open('data/riddle_on_map.js') as f:
         return f.read()
 
 
 @app.route('/to_page.js')
-def to_anomaly_page_js():
+def to_riddle_page_js():
     with open('data/to_page.js') as f:
         return f.read()
 
 
 @app.route("/riddle.js")
-def anomaly_js():
+def riddle_js():
     with open("data/riddle.js") as f:
         return f.read()
 
 
-class AnomalyAnswerForm(FlaskForm):
+class RiddleAnswerForm(FlaskForm):
     ans = StringField("Ответ:", validators=[DataRequired()])
     submit = SubmitField("Отправить")
 
 
-@app.route('/anomalies/<int:anomaly_id>', methods=["GET", "POST"])
-def anomaly_page(anomaly_id):
+@app.route('/riddlies/<int:riddle_id>', methods=["GET", "POST"])
+def riddle_page(riddle_id):
     session = db_session.create_session()
-    riddle = session.query(Riddle).filter(Riddle.id == anomaly_id).one()
-    form = AnomalyAnswerForm()
+    riddle = session.query(Riddle).filter(Riddle.id == riddle_id).one()
+    form = RiddleAnswerForm()
     if form.validate_on_submit():
         if form.ans.data == riddle.ans:
             message = "Правильно!"
             if current_user.is_authenticated and \
                not session.query(Found).filter((Found.user_id == current_user.id) &
-                                               (Found.anomaly_id == anomaly_id)).all():
+                                               (Found.riddle_id == riddle_id)).all():
                 new_found = Found()
                 new_found.user_id = current_user.id
-                new_found.anomaly_id = anomaly_id
+                new_found.riddle_id = riddle_id
                 current_user.founds.append(new_found)
                 current_user.score += 5
-                print(current_user.score)
                 session.merge(current_user)
                 session.commit()
         else:
