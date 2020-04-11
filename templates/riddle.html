@@ -27,7 +27,11 @@
                     <div>{{ message }}</div>
                 </form>
                 Автор загадки: {{ riddle.author.name }} ({{ riddle.author.login }})
-                <a href="mailto:asvasil22@gmail.com">Сообщить о неточности</a>
+                {% if current_user.is_authenticated and current_user.id == riddle.author.id %}
+                    <a href="/riddles/{{ riddle.id }}/edit">Редактировать</a>
+                {% else %}
+                    <a href="mailto:asvasil22@gmail.com">Сообщить о неточности</a>
+                {% endif %}
             </td>
         </tr>
     </table>

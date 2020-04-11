@@ -22,6 +22,55 @@ def load_user(user_id):
     return session.query(User).get(user_id)
 
 
+@app.route('/empty.js')
+def empty_js():
+    return "function onl""oad() {}"
+
+
+def get_marks():
+    session = db_session.create_session()
+    for riddle in session.query(Riddle).all():
+        found = current_user.is_authenticated and session.query(Found)\
+            .filter((Found.user_id == current_user.id) & (Found.riddle_id == riddle.id))
+        yield f"{riddle.pos},pm{'gr' if found else 'wt'}m{riddle.id}"
+
+
+@app.route('/map.js')
+def map_js():
+    with open('data/map.js') as f:
+        return f.read().replace('<marks>', '~'.join(get_marks()))
+
+
+@app.route('/to_page.js')
+def to_riddle_page_js():
+    with open('data/to_page.js') as f:
+        return f.read()
+
+
+@app.route('/riddle_on_map.js')
+def riddle_on_map_js():
+    with open('data/riddle_on_map.js') as f:
+        return f.read()
+
+
+@app.route('/riddle_on_map1.js')
+def riddle_on_map1js():
+    with open('data/riddle_on_map1.js') as f:
+        return f.read()
+
+
+@app.route("/new_riddle.js")
+def new_riddle_js():
+    with open("data/new_riddle.js") as f:
+        return f.read()
+
+
+@app.route("/riddle.js")
+def riddle_js():
+    with open("data/riddle.js") as f:
+        return f.read()
+
+
 class RegisterForm(FlaskForm):
     name = StringField('Имя:', validators=[DataRequired()])
     login = StringField('Логин:', validators=[DataRequired()])
@@ -77,28 +126,28 @@ def logout():
     return redirect("/")
 
 
-@app.route('/empty.js')
-def empty_js():
-    return "function onload() {}"
+def update_riddle_from_form(form, riddle):
+    long = float(form.long_deg.data) + (
+            float(form.long_min.data) + float(form.long_sec.data) / 60) / 60
+    latt = float(form.latt_deg.data) + (
+            float(form.latt_min.data) + float(form.latt_sec.data) / 60) / 60
+    riddle.pos = f'{long},{latt}'
+    riddle.name = form.name.data
+    riddle.desc = form.desc.data
+    riddle.ans = form.ans.data
 
 
 class NewRiddleForm(FlaskForm):
     latt_deg = StringField("", validators=[DataRequired()])
-    latt_min = StringField("", validators=[DataRequired()])
-    latt_sec = StringField("", validators=[DataRequired()])
+    latt_min = StringField("", validators=[DataRequired()], default="0")
+    latt_sec = StringField("", validators=[DataRequired()], default="0")
     long_deg = StringField("", validators=[DataRequired()])
-    long_min = StringField("", validators=[DataRequired()])
-    long_sec = StringField("", validators=[DataRequired()])
-    name = StringField("Название аномалии:", validators=[DataRequired()])
-    desc = StringField("Описание артефакта:", validators=[DataRequired()])
+    long_min = StringField("", validators=[DataRequired()], default="0")
+    long_sec = StringField("", validators=[DataRequired()], default="0")
+    name = StringField("Название загадки:", validators=[DataRequired()])
+    desc = StringField("Текст загадки:", validators=[DataRequired()])
     ans = StringField("Ответ:", validators=[DataRequired()])
     submit = SubmitField('Создать')
-
-
-@app.route("/new_riddle.js")
-def new_riddle_js():
-    with open("data/new_riddle.js") as f:
-        return f.read()
 
 
 @app.route("/new_riddle", methods=["GET", "POST"])
@@ -107,52 +156,13 @@ def new_riddle():
     if form.validate_on_submit():
         session = db_session.create_session()
         riddle = Riddle()
-        long = float(form.long_deg.data) + (
-                    float(form.long_min.data) + float(form.long_sec.data) / 60) / 60
-        latt = float(form.latt_deg.data) + (
-                    float(form.latt_min.data) + float(form.latt_sec.data) / 60) / 60
-        riddle.pos = f'{long},{latt}'
-        riddle.name = form.name.data
-        riddle.desc = form.desc.data
-        riddle.ans = form.ans.data
+        update_riddle_from_form(form, riddle)
         current_user.riddles.append(riddle)
         current_user.score += 5
         session.merge(current_user)
         session.commit()
         return redirect('/')
-    return render_template('new_riddle.html', form=form)
-
-
-def get_marks():
-    session = db_session.create_session()
-    for riddle in session.query(Riddle).all():
-        found = current_user.is_authenticated and session.query(Found)\
-            .filter((Found.user_id == current_user.id) & (Found.riddle_id == riddle.id))
-        yield f"{riddle.pos},pm{'gr' if found else 'wt'}m{riddle.id}"
-
-
-@app.route('/map.js')
-def map_js():
-    with open('data/map.js') as f:
-        return f.read().replace('<marks>', '~'.join(get_marks()))
-
-
-@app.route('/riddle_on_map.js')
-def riddle_on_map_js():
-    with open('data/riddle_on_map.js') as f:
-        return f.read()
-
-
-@app.route('/to_page.js')
-def to_riddle_page_js():
-    with open('data/to_page.js') as f:
-        return f.read()
-
-
-@app.route("/riddle.js")
-def riddle_js():
-    with open("data/riddle.js") as f:
-        return f.read()
+    return render_template('edit_riddle.html', form=form, is_new=True, title="Создание загадки")
 
 
 class RiddleAnswerForm(FlaskForm):
@@ -182,15 +192,47 @@ def riddle_page(riddle_id):
             message = "Неправильный ответ"
             if current_user.is_authenticated:
                 current_user.score -= 3
-        return render_template('riddle.html', riddle=riddle, form=form, message=message)
-    return render_template('riddle.html', riddle=riddle, form=form)
+        return render_template('riddle.html', riddle=riddle, form=form, message=message,
+                               title=f"Загадка «{riddle.name}»")
+    return render_template('riddle.html', riddle=riddle, form=form, title=f"Загадка «{riddle.name}»")
+
+
+class RiddleEditForm(FlaskForm):
+    latt_deg = StringField("", validators=[DataRequired()])
+    latt_min = StringField("", validators=[DataRequired()], default="0")
+    latt_sec = StringField("", validators=[DataRequired()], default="0")
+    long_deg = StringField("", validators=[DataRequired()])
+    long_min = StringField("", validators=[DataRequired()], default="0")
+    long_sec = StringField("", validators=[DataRequired()], default="0")
+    name = StringField("Название загадки:", validators=[DataRequired()])
+    desc = StringField("Текст загадки:", validators=[DataRequired()])
+    ans = StringField("Ответ:", validators=[DataRequired()])
+    submit = SubmitField('Сохранить')
+
+
+@app.route('/riddles/<int:riddle_id>/edit')
+def edit_riddle(riddle_id):
+    session = db_session.create_session()
+    riddle = session.query(Riddle).filter(Riddle.id == riddle_id).one()
+    form = RiddleEditForm()
+    if form.validate_on_submit():
+        update_riddle_from_form(form, riddle)
+        session.merge(riddle)
+        session.commit()
+        return redirect(f'/riddles/{riddle_id}')
+    form.long_deg.default, form.latt_deg.default = riddle.pos.split(',')
+    form.name.default = riddle.name
+    form.desc.default = riddle.desc
+    form.ans.default = riddle.ans
+    form.process()
+    return render_template('edit_riddle.html', form=form, title="Редактирование загадки")
 
 
 @app.route('/users/<user_login>')
 def user_page(user_login):
     session = db_session.create_session()
     user = session.query(User).filter(User.login == user_login).one()
-    return render_template('user.html', user=user)
+    return render_template('user.html', user=user, title=f"Страница пользователя {user.name}")
 
 
 @app.route('/score-table')
@@ -212,7 +254,7 @@ def index():
 
 def main():
     db_session.global_init("db/stalker_base.sqlite")
-    app.run()
+    app.run(host="0.0.0.0")
 
 
 if __name__ == '__main__':
