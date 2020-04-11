@@ -17,5 +17,5 @@ class Comment(SqlAlchemyBase):
                                   index=True)
     riddle = orm.relation('riddles')
 
-    author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.id'))
+    author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
     author = orm.relation('users')
