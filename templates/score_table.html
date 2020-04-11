@@ -12,7 +12,7 @@
         </tr>
         {% for user in users %}
             <tr>
-                <td>{{ user.login }}</td>
+                <td><a href="/users/{{ user.login }}">{{ user.login }}</a></td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.created_date.strftime("%Y-%m-%d %H:%M") }}</td>
                 <td>{{ user.score }}</td>

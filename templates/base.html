@@ -15,7 +15,11 @@
 <body onload="onload()">
 <header>
     <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="/"><b>Игра "ГеоКвиз"</b></a>
+        <a class="navbar-brand" href="/"><b>Игра "ГеоКвиз"</b>
+            {% if not main_page %}
+                (Вернуться на главную)
+            {% endif %}
+        </a>
         {% if current_user.is_authenticated %}
             <a class="navbar-brand" href="/logout">{{ current_user.name }} (Выйти)</a>
         {% else %}

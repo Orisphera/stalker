@@ -115,7 +115,8 @@ def new_riddle():
         riddle.name = form.name.data
         riddle.desc = form.desc.data
         riddle.ans = form.ans.data
-        current_user.riddlies.append(riddle)
+        current_user.riddles.append(riddle)
+        current_user.score += 5
         session.merge(current_user)
         session.commit()
         return redirect('/')
@@ -159,7 +160,7 @@ class RiddleAnswerForm(FlaskForm):
     submit = SubmitField("Отправить")
 
 
-@app.route('/riddlies/<int:riddle_id>', methods=["GET", "POST"])
+@app.route('/riddles/<int:riddle_id>', methods=["GET", "POST"])
 def riddle_page(riddle_id):
     session = db_session.create_session()
     riddle = session.query(Riddle).filter(Riddle.id == riddle_id).one()
@@ -179,6 +180,8 @@ def riddle_page(riddle_id):
                 session.commit()
         else:
             message = "Неправильный ответ"
+            if current_user.is_authenticated:
+                current_user.score -= 3
         return render_template('riddle.html', riddle=riddle, form=form, message=message)
     return render_template('riddle.html', riddle=riddle, form=form)
 
@@ -204,7 +207,7 @@ def help1():
 
 @app.route('/')
 def index():
-    return render_template('index.html', title='Домашняя страница')
+    return render_template('index.html', title='Домашняя страница', main_page=True)
 
 
 def main():

@@ -4,16 +4,16 @@
         {{ user.name }} ({{ user.login }})
     </p>
     <p>
-        Зарегистрирован {{ user.created_date }}
+        Зарегистрирован {{ user.created_date.strftime("%Y-%m-%d %H:%M") }}
     </p>
     <p>
         Очки: {{ user.score }}
     </p>
     <p>
-        Разгадал загадки:
+        Разгадал(а) загадки:
         <ul>
             {% for found in user.founds %}
-                <li>{{ found.riddle.name }}</li>
+                <li><a href="/riddles/{{ found.riddle.id }}">{{ found.riddle.name }}</a></li>
             {% endfor %}
         </ul>
     </p>

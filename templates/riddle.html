@@ -7,7 +7,7 @@
     <table>
         <tr>
             <td>
-                <img id="map" coords="{{anomaly.pos}}">
+                <img id="map" coords="{{riddle.pos}}">
             </td>
             <td>
                 <h1>{{ riddle.name }}</h1>
@@ -34,7 +34,7 @@
     Следующие игроки разгадали загадку:
     <ul>
         {% for found in riddle.founds %}
-            <li>{{ found.user.name }} ({{ found.user.login }})</li>
+            <li><a href="/users/{{ found.user.login }}">{{ found.user.name }} ({{ found.user.login }})</a></li>
         {% endfor %}
     </ul>
 {% endblock %}
