@@ -1,3 +1,3 @@
 from . import users
-from . import anomalies
+from . import riddles
 from . import found
