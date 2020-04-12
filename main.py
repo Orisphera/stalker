@@ -3,6 +3,7 @@ import random
 from flask import Flask, render_template
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
+from sqlalchemy import orm
 from werkzeug.utils import redirect
 from wtforms import PasswordField, BooleanField, SubmitField, StringField
 from wtforms.validators import DataRequired, EqualTo
@@ -182,7 +183,10 @@ class RiddleAnswerForm(FlaskForm):
 @app.route('/riddles/<int:riddle_id>', methods=["GET", "POST"])
 def riddle_page(riddle_id):
     session = db_session.create_session()
-    riddle = session.query(Riddle).filter(Riddle.id == riddle_id).one()
+    try:
+        riddle = session.query(Riddle).filter(Riddle.id == riddle_id).one()
+    except orm.exc.NoResultFound:
+        return render_template('missing_riddle.html', title='Такой загадки нет')
     form = RiddleAnswerForm()
     if form.validate_on_submit():
         if form.ans.data == riddle.ans:
@@ -222,7 +226,10 @@ class RiddleEditForm(FlaskForm):
 @app.route('/riddles/<int:riddle_id>/edit', methods=["GET", "POST"])
 def edit_riddle(riddle_id):
     session = db_session.create_session()
-    riddle = session.query(Riddle).filter(Riddle.id == riddle_id).one()
+    try:
+        riddle = session.query(Riddle).filter(Riddle.id == riddle_id).one()
+    except orm.exc.NoResultFound:
+        return render_template('missing_riddle.html', title='Такой загадки нет')
     form = RiddleEditForm()
     if form.validate_on_submit():
         update_riddle_from_form(form, riddle)
@@ -242,8 +249,11 @@ def edit_riddle(riddle_id):
 @app.route('/users/<user_login>')
 def user_page(user_login):
     session = db_session.create_session()
-    user = session.query(User).filter(User.login == user_login).one()
-    return render_template('user.html', user=user, title=f"Страница пользователя {user.name}")
+    try:
+        user = session.query(User).filter(User.login == user_login).one()
+        return render_template('user.html', user=user, title=f"Страница пользователя {user.name}")
+    except orm.exc.NoResultFound:
+        return render_template('missing_user.html', title="Страница несуществующего пользователя")
 
 
 @app.route('/score-table')
