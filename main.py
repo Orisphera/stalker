@@ -194,7 +194,7 @@ def riddle_page(riddle_id):
         return render_template('missing_riddle.html', title='Такой загадки нет')
     form = RiddleAnswerForm()
     if form.validate_on_submit():
-        if form.ans.data == riddle.ans:
+        if form.ans.data.lower() == riddle.ans.lower():
             message = "Правильно!"
             if current_user.is_authenticated and \
                not session.query(Found).filter((Found.user_id == current_user.id) &
