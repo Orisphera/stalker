@@ -1,3 +1,5 @@
+import random
+
 from flask import Flask, render_template
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -37,8 +39,15 @@ def get_marks():
 
 @app.route('/map.js')
 def map_js():
+    session = db_session.create_session()
+    try:
+        riddle = random.choice(tuple(sesison.query(Riddle).all()))
+        long, latt = riddle.pos.split(',')
+    except IndexError:
+        long = latt = 0
     with open('data/map.js') as f:
-        return f.read().replace('<marks>', '~'.join(get_marks()))
+        return (f.read().replace('<marks>', '~'.join(get_marks()))
+                .replace('<long>', long).replace('<latt>', latt))
 
 
 @app.route('/to_page.js')

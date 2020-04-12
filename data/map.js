@@ -1,5 +1,5 @@
-let center_latitude = 0;
-let center_longitude = 0;
+let center_latitude = <latt>;
+let center_longitude = <long>;
 let span = 0.01;
 
 
@@ -11,6 +11,7 @@ function updateMap() {
 
 
 function onload() {
+    updateMap()
     function success(position) {
         center_latitude = position.coords.latitude;
         center_longitude = position.coords.longitude;
