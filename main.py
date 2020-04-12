@@ -209,7 +209,9 @@ def riddle_page(riddle_id):
         else:
             message = "Неправильный ответ"
             if current_user.is_authenticated:
-                current_user.score -= 3
+                current_user.score -= 1
+                session.merge(current_user)
+                session.commit()
         return render_template('riddle.html', riddle=riddle, form=form, message=message,
                                title=f"Загадка «{riddle.name}»")
     return render_template('riddle.html', riddle=riddle, form=form, title=f"Загадка «{riddle.name}»")

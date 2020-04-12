@@ -27,31 +27,31 @@ function onload() {
 
 
 function moveUp() {
-    center_latitude += span / 2;
+    center_latitude += span / 3;
     updateMap();
 }
 
 function moveLeft() {
-    center_longitude -= span;
+    center_longitude -= span * 2 / 3;
     updateMap();
 }
 
 function moveRight() {
-    center_longitude += span;
+    center_longitude += span * 2 / 3;
     updateMap();
 }
 
 function zoomIn() {
-    span /= 10;
+    span /= 2.15;
     updateMap();
 }
 
 function moveDown() {
-    center_latitude -= span / 2;
+    center_latitude -= span / 3;
     updateMap();
 }
 
 function zoomOut() {
-    span *= 10;
+    span *= 2.15;
     updateMap();
 }
