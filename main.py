@@ -41,7 +41,7 @@ def get_marks():
 def map_js():
     session = db_session.create_session()
     try:
-        riddle = random.choice(tuple(sesison.query(Riddle).all()))
+        riddle = random.choice(tuple(session.query(Riddle).all()))
         long, latt = riddle.pos.split(',')
     except IndexError:
         long = latt = 0
