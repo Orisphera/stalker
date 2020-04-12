@@ -210,7 +210,7 @@ class RiddleEditForm(FlaskForm):
     submit = SubmitField('Сохранить')
 
 
-@app.route('/riddles/<int:riddle_id>/edit')
+@app.route('/riddles/<int:riddle_id>/edit', methods=["GET", "POST"])
 def edit_riddle(riddle_id):
     session = db_session.create_session()
     riddle = session.query(Riddle).filter(Riddle.id == riddle_id).one()
