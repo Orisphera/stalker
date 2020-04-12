@@ -234,7 +234,9 @@ def edit_riddle(riddle_id):
     form.desc.default = riddle.desc
     form.ans.default = riddle.ans
     form.process()
-    return render_template('edit_riddle.html', form=form, title="Редактирование загадки")
+    return render_template('edit_riddle.html', form=form, title="Редактирование загадки",
+                           can_edit=(current_user.is_authenticated and
+                                     current_user.id == riddle.author_id))
 
 
 @app.route('/users/<user_login>')

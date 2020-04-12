@@ -116,16 +116,18 @@
                             </p>
                         {% endfor %}
                     </p>
-                    <p>
-                        {{ form.ans.label }}<br>
-                        {{ form.ans(class="form-control") }}<br>
-                        {% for error in form.ans.errors %}
-                            <p content="alert alert-danger" role="alert">
-                                {{ error }}
-                            </p>
-                        {% endfor %}
-                    </p>
-                    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+                    {% if is_new or can_edit %}
+                        <p>
+                            {{ form.ans.label }}<br>
+                            {{ form.ans(class="form-control") }}<br>
+                            {% for error in form.ans.errors %}
+                                <p content="alert alert-danger" role="alert">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </p>
+                        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+                    {% endif %}
                 </form>
             </td>
         </tr>
