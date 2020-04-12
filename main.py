@@ -281,7 +281,7 @@ def help1():
 
 @app.route('/')
 def index():
-    return render_template('index.html', title='Домашняя страница', main_page=True)
+    return render_template('index.html', title='ГеоКвиз', main_page=True)
 
 
 def main():
