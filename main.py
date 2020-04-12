@@ -166,7 +166,12 @@ def new_riddle():
     if form.validate_on_submit():
         session = db_session.create_session()
         riddle = Riddle()
-        update_riddle_from_form(form, riddle)
+        try:
+            update_riddle_from_form(form, riddle)
+        except ValueError:
+            return render_template('edit_riddle.html', form=form, is_new=True,
+                                   title="Создание загадки",
+                                   message="Неверный формат координат")
         current_user.riddles.append(riddle)
         current_user.score += 5
         session.merge(current_user)
@@ -232,7 +237,13 @@ def edit_riddle(riddle_id):
         return render_template('missing_riddle.html', title='Такой загадки нет')
     form = RiddleEditForm()
     if form.validate_on_submit():
-        update_riddle_from_form(form, riddle)
+        try:
+            update_riddle_from_form(form, riddle)
+        except ValueError:
+            return render_template('edit_riddle.html', form=form, title="Редактирование загадки",
+                                   can_edit=(current_user.is_authenticated and
+                                             current_user.id == riddle.author_id),
+                                   message="Неверный формат координат")
         session.merge(riddle)
         session.commit()
         return redirect(f'/riddles/{riddle_id}')
