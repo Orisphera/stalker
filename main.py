@@ -288,7 +288,7 @@ def all_riddles():
     riddles = sorted(session.query(Riddle).all(),
                      key=lambda riddle: len(riddle.founds),
                      reverse=True)
-    return render_template('/all_riddles.html', title="Список загадок", riddles=riddles)
+    return render_template('/all_riddles.html', title="Список загадок", riddles=riddles, len=len)
 
 
 @app.route('/')

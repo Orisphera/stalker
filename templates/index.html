@@ -47,6 +47,9 @@
                 <a href="/help"> Как играть </a>
                 <br><br><br><br>
                 <p>
+                    <a href="/all-riddles"> Загадки </a>
+                </p>
+                <p>
                     Введите ID загадки, чтобы перейти на её страницу:
                 </p>
                 <p>
@@ -57,12 +60,9 @@
                 </p>
                 {% if current_user.is_authenticated %}
                     <p>
-                        <a href="/new_riddle"> Создать загадку </a>
+                        <a href="/new_riddle"> Создать новую загадку </a>
                     </p>
                 {% endif %}
-                <p>
-                    <a href="/all-riddles"> Все загадки </a>
-                </p>
             </td>
         </tr>
     </table>
