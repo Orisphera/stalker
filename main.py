@@ -1,3 +1,4 @@
+import json
 import random
 
 from flask import Flask, render_template
@@ -198,10 +199,10 @@ def riddle_page(riddle_id):
             message = "Правильно!"
             if current_user.is_authenticated and \
                not session.query(Found).filter((Found.user_id == current_user.id) &
-                                               (Found.riddle_id == riddle_id)).all():
+                                               (Found.riddle_id == riddle.id)).all():
                 new_found = Found()
                 new_found.user_id = current_user.id
-                new_found.riddle_id = riddle_id
+                new_found.riddle_id = riddle.id
                 current_user.founds.append(new_found)
                 current_user.score += 5
                 session.merge(current_user)
@@ -284,6 +285,28 @@ def help1():
 @app.route('/')
 def index():
     return render_template('index.html', title='ГеоКвиз', main_page=True)
+
+
+@app.route('/api/users/<user_login>')
+def api_user(user_login):
+    session = db_session.create_session()
+    user = session.query(User).filter(User.login == user_login)
+    return json.dumps({"name": user.name, "login": user.login, "score": user.score})
+
+
+@app.route('/api/user_list')
+def api_user_list():
+    session = db_session.create_session()
+    return json.dumps([{"name": user.name, "login": user.login, "score": user.score}
+                       for user in session.query(User).all()])
+
+
+@app.route('/api/riddle/<riddle_id>')
+def api_riddle(riddle_id):
+    session = db_session.create_session()
+    riddle = session.query(Riddle).filter(Riddle.id == riddle_id)
+    return json.dumps({"id": riddle.id, "pos": riddle.pos, "name": riddle.name, "desc": riddle.desc,
+                       "made_date": riddle.made_date})
 
 
 def main():
