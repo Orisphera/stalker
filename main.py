@@ -282,6 +282,15 @@ def help1():
     return render_template('help.html', title="Как играть")
 
 
+@app.route('/all-riddles')
+def all_riddles():
+    session = db_session.create_session()
+    riddles = sorted(session.query(Riddle).all(),
+                     key=lambda riddle: len(riddle.founds),
+                     reverse=True)
+    return render_template('/all_riddles.html', title="Список загадок", riddles=riddles)
+
+
 @app.route('/')
 def index():
     return render_template('index.html', title='ГеоКвиз', main_page=True)

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+    <br>
+    <h2> Загадки </h2>
+    <br>
+    <table border=2 cellpadding=5>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Дата создания</th>
+            <th>Координаты (долгота,широта)</th>
+            <th>Количество решивших</th>
+        </tr>
+        {% for riddle in riddles %}
+            <tr>
+                <td><a href="riddles/{{ riddle.id }}">{{ riddle.id }}</a></td>
+                <td>{{ riddle.name }}</td>
+                <td>{{ riddle.made_date.strftime("%Y-%m-%d %H:%M") }}</td>
+                <td>{{ riddle.pos }}</td>
+                <td>{{ len(riddle.founds) }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
