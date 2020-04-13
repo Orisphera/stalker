@@ -7,7 +7,6 @@
         <tr>
             <th>ID</th>
             <th>Название</th>
-            <th>Дата создания</th>
             <th>Координаты (долгота,широта)</th>
             <th>Количество решивших</th>
         </tr>
@@ -15,8 +14,7 @@
             <tr>
                 <td><a href="riddles/{{ riddle.id }}">{{ riddle.id }}</a></td>
                 <td>{{ riddle.name }}</td>
-                <td>{{ riddle.made_date.strftime("%Y-%m-%d %H:%M") }}</td>
-                <td>{{ riddle.pos }}</td>
+                <td>{{ format_pos(riddle) }}</td>
                 <td>{{ len(riddle.founds) }}</td>
             </tr>
         {% endfor %}

@@ -282,13 +282,19 @@ def help1():
     return render_template('help.html', title="Как играть")
 
 
+def format_pos(riddle):
+    long, latt = (f'{float(coord):.5f}' for coord in riddle.pos.split(','))
+    return f'{latt},{long}'
+
+
 @app.route('/all-riddles')
 def all_riddles():
     session = db_session.create_session()
     riddles = sorted(session.query(Riddle).all(),
                      key=lambda riddle: len(riddle.founds),
                      reverse=True)
-    return render_template('/all_riddles.html', title="Список загадок", riddles=riddles, len=len)
+    return render_template('/all_riddles.html', title="Список загадок", riddles=riddles,
+                           len=len, format_pos=format_pos)
 
 
 @app.route('/')
