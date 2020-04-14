@@ -9,29 +9,41 @@ from werkzeug.utils import redirect
 from wtforms import PasswordField, BooleanField, SubmitField, StringField
 from wtforms.validators import DataRequired, EqualTo
 
-from data import db_session
-from data.riddles import Riddle
-from data.found import Found
-from data.users import User
+from data import db_session  # Импортируем базу данных ГеоКвиз
+from data.riddles import Riddle  # Импортируем сущность загадка
+from data.users import User  # Сущность пользователя
+from data.found import Found  # Связь между загадками и пользователями
+
+import logging
 
 app = Flask(__name__)
-login_manager = LoginManager()
+login_manager = LoginManager()  # для аутентификации пользователей
 login_manager.init_app(app)
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['SECRET_KEY'] = 'yan''dex''lyceum_secret_key'  # для шифрования паролей
+
+
+logging.basicConfig(
+    filename='log/main.log',
+    format='%(asctime)s %(levelname)s %(name)s %(message)s'
+)
 
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(user_id):  # Для загрузки пользователя
     session = db_session.create_session()
     return session.query(User).get(user_id)
 
 
 @app.route('/empty.js')
-def empty_js():
-    return "function onl""oad() {}"
+def empty_js():  # Получение скрипта с определением on_load по умолчанию
+    return "function on_load() {}"
 
 
 def get_marks():
+    """
+    Получение отметок карты для авторизованого ползователя.
+    В зависимости от того, была ли найдена метка или нет, она будет отображаться разным цветом.
+    """
     session = db_session.create_session()
     for riddle in session.query(Riddle).all():
         found = current_user.is_authenticated and session.query(Found)\
@@ -40,44 +52,44 @@ def get_marks():
 
 
 @app.route('/map.js')
-def map_js():
+def map_js():  # Получение скрипта для отображения карты
     session = db_session.create_session()
     try:
         riddle = random.choice(tuple(session.query(Riddle).all()))
         long, latt = riddle.pos.split(',')
     except IndexError:
-        long = latt = 0
+        long = latt = '0'
     with open('data/map.js') as f:
         return (f.read().replace('<marks>', '~'.join(get_marks()))
                 .replace('<long>', long).replace('<latt>', latt))
 
 
 @app.route('/to_page.js')
-def to_riddle_page_js():
+def to_page_js():  # Получение скрипта для перехода к страницам загадок и пользователей
     with open('data/to_page.js') as f:
         return f.read()
 
 
 @app.route('/riddle_on_map.js')
-def riddle_on_map_js():
+def riddle_on_map_js():  # Получение скрипта для отображения загадки на карте
     with open('data/riddle_on_map.js') as f:
         return f.read()
 
 
 @app.route('/riddle_on_map1.js')
-def riddle_on_map1js():
+def riddle_on_map1js():  # Получение скрипта для отображения редактируемой загадки на карте
     with open('data/riddle_on_map1.js') as f:
         return f.read()
 
 
 @app.route("/new_riddle.js")
-def new_riddle_js():
+def new_riddle_js():  # Получения скрипта для загрузки координат новой загадки по умолчанию
     with open("data/new_riddle.js") as f:
         return f.read()
 
 
 @app.route("/riddle.js")
-def riddle_js():
+def riddle_js():  # Получение скрипта для отображения загадки на карте
     with open("data/riddle.js") as f:
         return f.read()
 
@@ -91,7 +103,7 @@ class RegisterForm(FlaskForm):
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+def register():  # Регистрация нового пользователя
     form = RegisterForm()
     if form.validate_on_submit():
         session = db_session.create_session()
@@ -104,6 +116,7 @@ def register():
         user.set_password(form.password.data)
         session.add(user)
         session.commit()
+        logging.info(f"Registered user {user.login}")
         return redirect('/')
     return render_template('register.html', title="Регистрация", form=form)
 
@@ -116,7 +129,7 @@ class LoginForm(FlaskForm):
 
 
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login():  # Вход
     form = LoginForm()
     if form.validate_on_submit():
         session = db_session.create_session()
@@ -132,12 +145,12 @@ def login():
 
 @app.route('/logout')
 @login_required
-def logout():
+def logout():  # Выход из системы
     logout_user()
     return redirect("/")
 
 
-def update_riddle_from_form(form, riddle):
+def update_riddle_from_form(form, riddle):  # Обновление загадки
     long = float(form.long_deg.data) + (
             float(form.long_min.data) + float(form.long_sec.data) / 60) / 60
     latt = float(form.latt_deg.data) + (
@@ -162,7 +175,8 @@ class NewRiddleForm(FlaskForm):
 
 
 @app.route("/new_riddle", methods=["GET", "POST"])
-def new_riddle():
+@login_required
+def new_riddle():  # Создание загадки
     form = NewRiddleForm()
     if form.validate_on_submit():
         session = db_session.create_session()
@@ -177,6 +191,7 @@ def new_riddle():
         current_user.score += 5
         session.merge(current_user)
         session.commit()
+        logging.info(f"Created riddle {riddle.id} by {current_user.login}")
         return redirect('/')
     return render_template('edit_riddle.html', form=form, is_new=True, title="Создание загадки")
 
@@ -187,7 +202,7 @@ class RiddleAnswerForm(FlaskForm):
 
 
 @app.route('/riddles/<int:riddle_id>', methods=["GET", "POST"])
-def riddle_page(riddle_id):
+def riddle_page(riddle_id):  # Страница загадки
     session = db_session.create_session()
     try:
         riddle = session.query(Riddle).filter(Riddle.id == riddle_id).one()
@@ -232,23 +247,29 @@ class RiddleEditForm(FlaskForm):
 
 
 @app.route('/riddles/<int:riddle_id>/edit', methods=["GET", "POST"])
-def edit_riddle(riddle_id):
+@login_required
+def edit_riddle(riddle_id):  # Редактирование загадки
     session = db_session.create_session()
     try:
         riddle = session.query(Riddle).filter(Riddle.id == riddle_id).one()
     except orm.exc.NoResultFound:
         return render_template('missing_riddle.html', title='Такой загадки нет')
     form = RiddleEditForm()
+    can_edit = current_user.id == riddle.author_id
     if form.validate_on_submit():
+        if not can_edit:
+            return render_template('edit_riddle.html', form=form, title="Редактирование загадки",
+                                   can_edit=can_edit,
+                                   message="Вы вышли из аккаунта")
         try:
             update_riddle_from_form(form, riddle)
         except ValueError:
             return render_template('edit_riddle.html', form=form, title="Редактирование загадки",
-                                   can_edit=(current_user.is_authenticated and
-                                             current_user.id == riddle.author_id),
+                                   can_edit=can_edit,
                                    message="Неверный формат координат")
         session.merge(riddle)
         session.commit()
+        logging.info(f"Edited riddle {riddle.id} by {current_user.login}")
         return redirect(f'/riddles/{riddle_id}')
     form.long_deg.default, form.latt_deg.default = riddle.pos.split(',')
     form.name.default = riddle.name
@@ -256,12 +277,11 @@ def edit_riddle(riddle_id):
     form.ans.default = riddle.ans
     form.process()
     return render_template('edit_riddle.html', form=form, title="Редактирование загадки",
-                           can_edit=(current_user.is_authenticated and
-                                     current_user.id == riddle.author_id))
+                           can_edit=can_edit)
 
 
 @app.route('/users/<user_login>')
-def user_page(user_login):
+def user_page(user_login):  # Страница пользователя
     session = db_session.create_session()
     try:
         user = session.query(User).filter(User.login == user_login).one()
@@ -271,24 +291,27 @@ def user_page(user_login):
 
 
 @app.route('/score-table')
-def score_table():
+def score_table():  # Таблица пользователей
     session = db_session.create_session()
     users = session.query(User).order_by(User.score.desc())
     return render_template('score_table.html', users=users, title="Положение")
 
 
 @app.route('/help')
-def help1():
+def help1():  # Страница с описанием игры
     return render_template('help.html', title="Как играть")
 
 
 def format_pos(riddle):
+    """
+    Позиция загадки в формате широта,долгота с точностью до 5 знаков после точки
+    """
     long, latt = (f'{float(coord):.5f}' for coord in riddle.pos.split(','))
     return f'{latt},{long}'
 
 
 @app.route('/all-riddles')
-def all_riddles():
+def all_riddles():  # Страница всех загадок отсортированных по количеству решений
     session = db_session.create_session()
     riddles = sorted(session.query(Riddle).all(),
                      key=lambda riddle: len(riddle.founds),
@@ -298,33 +321,35 @@ def all_riddles():
 
 
 @app.route('/')
-def index():
+def index():  # Главная страница
     return render_template('index.html', title='ГеоКвиз', main_page=True)
 
 
 @app.route('/api/users/<user_login>')
-def api_user(user_login):
+def api_user(user_login):  # Информация о пользователе для ботов
     session = db_session.create_session()
     user = session.query(User).filter(User.login == user_login)
-    return json.dumps({"name": user.name, "login": user.login, "score": user.score})
+    return json.dumps({"name": user.name, "login": user.login, "score": user.score,
+                       "solved_riddles": [found.riddle.id for found in user.founds],
+                       "created_riddles": [riddle.id for riddle in user.riddles]})
 
 
 @app.route('/api/user_list')
-def api_user_list():
+def api_user_list():  # Информация о всех пользователях для ботов
     session = db_session.create_session()
     return json.dumps([{"name": user.name, "login": user.login, "score": user.score}
                        for user in session.query(User).all()])
 
 
 @app.route('/api/riddle/<riddle_id>')
-def api_riddle(riddle_id):
+def api_riddle(riddle_id):  # Информация о загадке для ботов
     session = db_session.create_session()
     riddle = session.query(Riddle).filter(Riddle.id == riddle_id)
     return json.dumps({"id": riddle.id, "pos": riddle.pos, "name": riddle.name, "desc": riddle.desc,
-                       "made_date": riddle.made_date})
+                       "author": riddle.author.login, "made_date": riddle.made_date})
 
 
-def main():
+def main():  # Основная функция - запуск базы и сервера
     db_session.global_init("db/stalker_base.sqlite")
     app.run(host="0.0.0.0")
 

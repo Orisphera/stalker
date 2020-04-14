@@ -10,7 +10,7 @@ function updateMap() {
 }
 
 
-function onload() {
+function on_load() {
     updateMap()
     function success(position) {
         center_latitude = position.coords.latitude;
