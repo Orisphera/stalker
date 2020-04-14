@@ -7,13 +7,15 @@
         <tr>
             <th>ID</th>
             <th>Название</th>
+            <th>Автор</th>
             <th>Координаты (долгота,широта)</th>
             <th>Количество решивших</th>
         </tr>
         {% for riddle in riddles %}
             <tr>
-                <td><a href="riddles/{{ riddle.id }}">{{ riddle.id }}</a></td>
+                <td><a href="/riddles/{{ riddle.id }}">{{ riddle.id }}</a></td>
                 <td>{{ riddle.name }}</td>
+                <td><a href="/users/{{ riddle.user.login }}">{{ riddle.user.name }}</a></td>
                 <td>{{ format_pos(riddle) }}</td>
                 <td>{{ len(riddle.founds) }}</td>
             </tr>
