@@ -15,7 +15,7 @@
             <tr>
                 <td><a href="/riddles/{{ riddle.id }}">{{ riddle.id }}</a></td>
                 <td>{{ riddle.name }}</td>
-                <td><a href="/users/{{ riddle.user.login }}">{{ riddle.user.name }}</a></td>
+                <td><a href="/users/{{ riddle.author.login }}">{{ riddle.author.name }}</a></td>
                 <td>{{ format_pos(riddle) }}</td>
                 <td>{{ len(riddle.founds) }}</td>
             </tr>
