@@ -9,7 +9,7 @@
           crossorigin="anonymous">
     <title>{{title}}</title>
     {% block scripts %}
-        <script type="text/javascript" src="/empty.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='/empty.js') }}"></script>
     {% endblock %}
 </head>
 <body onload="on_load()">

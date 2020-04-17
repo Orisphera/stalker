@@ -34,11 +34,6 @@ def load_user(user_id):  # Для загрузки пользователя
     return session.query(User).get(user_id)
 
 
-@app.route('/empty.js')
-def empty_js():  # Получение скрипта с определением on_load по умолчанию
-    return "function on_load() {}"
-
-
 def get_marks():
     """
     Получение отметок карты для авторизованого ползователя.
@@ -62,36 +57,6 @@ def map_js():  # Получение скрипта для отображения
     with open('data/map.js') as f:
         return (f.read().replace('<marks>', '~'.join(get_marks()))
                 .replace('<long>', long).replace('<latt>', latt))
-
-
-@app.route('/to_page.js')
-def to_page_js():  # Получение скрипта для перехода к страницам загадок и пользователей
-    with open('data/to_page.js') as f:
-        return f.read()
-
-
-@app.route('/riddle_on_map.js')
-def riddle_on_map_js():  # Получение скрипта для отображения загадки на карте
-    with open('data/riddle_on_map.js') as f:
-        return f.read()
-
-
-@app.route('/riddle_on_map1.js')
-def riddle_on_map1js():  # Получение скрипта для отображения редактируемой загадки на карте
-    with open('data/riddle_on_map1.js') as f:
-        return f.read()
-
-
-@app.route("/new_riddle.js")
-def new_riddle_js():  # Получения скрипта для загрузки координат новой загадки по умолчанию
-    with open("data/new_riddle.js") as f:
-        return f.read()
-
-
-@app.route("/riddle.js")
-def riddle_js():  # Получение скрипта для отображения загадки на карте
-    with open("data/riddle.js") as f:
-        return f.read()
 
 
 class RegisterForm(FlaskForm):

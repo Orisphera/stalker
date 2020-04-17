@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block scripts %}
     <script type="text/javascript" src="/map.js"></script>
-    <script type="text/javascript" src="/to_page.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='/to_page.js') }}"></script>
 {% endblock %}
 {% block content %}
     <table>

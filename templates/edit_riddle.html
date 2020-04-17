@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block scripts %}
-    <script type="text/javascript" src="/riddle_on_map.js"></script>
-    <script type="text/javascript" src="/riddle_on_map1.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/riddle_on_map.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/riddle_on_map1.js') }}"></script>
     {% if is_new %}
-        <script type="text/javascript" src="/new_riddle.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/new_riddle.js') }}"></script>
+    {% else %}
+        <script type="text/javascript" src="{{ url_for('static', filename='js/empty.js') }}"></script>
     {% endif %}
 {% endblock %}
 {% block content %}
